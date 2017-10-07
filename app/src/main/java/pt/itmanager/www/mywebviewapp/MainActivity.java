@@ -46,6 +46,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private WebView mWebView;
+    private DatabaseHandler mDb;
     //String weatherWebserviceURL = "http://api.openweathermap.org/data/2.5/weather?q=ariana,tn&appid=2156e2dd5b92590ab69c0ae1b2d24586&units=metric";
     String weatherWebserviceURL = "http://itmanager.pt/mobile_contacts/get_contacts.php";
 
@@ -60,7 +61,9 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-        new ServiceStubAsyncTask(this, this).execute();
+        mDb = new DatabaseHandler(this);
+
+        new ServiceStubAsyncTask(this, this, mDb).execute();
 
         mWebView = (WebView) findViewById(R.id.activity_main_webview);
         WebSettings webSettings = mWebView.getSettings();
@@ -76,7 +79,16 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setDomStorageEnabled(true);
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT); // load online by default
 
+        // Reading all contacts
+        Log.d("Reading: ", "Reading all contacts..");
+        //db.addContact(new Contact("Ravi", "9100000000","","","","","","",""));
+        List<Contact> contacts = mDb.getAllContacts();
 
+        for (Contact cn : contacts) {
+            String log = "Id: "+cn.getID()+" ,Name: " + cn.getNome() + " ,Phone: " + cn.getTelemovel();
+            // Writing Contacts to log
+            Log.d("Name: ", log);
+        }
         if (!isNetworkAvailable()) { // loading offline
             //mWebView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );
             mWebView.loadUrl("http://www.itmanager.pt/mobile_contacts");
@@ -119,9 +131,10 @@ public class MainActivity extends AppCompatActivity {
         String response = "";
         HashMap<String, String> postDataParams;
 
-        public ServiceStubAsyncTask(Context context, Activity activity) {
+        public ServiceStubAsyncTask(Context context, Activity activity, DatabaseHandler db) {
             mContext = context;
             mActivity = activity;
+            mDb = db;
         }
 
         @Override
@@ -137,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
             HttpConnectionService service = new HttpConnectionService();
             response = service.sendRequest(apiPath, postDataParams);
-            DatabaseHandler db = new DatabaseHandler(mContext);
             JSONArray jsonArray = null;
 
             try {
@@ -158,12 +170,16 @@ public class MainActivity extends AppCompatActivity {
                     String ext_telefone = (String) resultJsonObject.get("ext_telefone");
                     String mail = (String) resultJsonObject.get("mail");
                     String nome = (String) resultJsonObject.get("nome");
-                    //String ultimonome = (String) resultJsonObject.get("ultimonome");
-                    String ultimonome = "";
+                    String ultimonome = (String) resultJsonObject.get("ultimonome");
 
-                    //Contact cn = db.getContact(Integer.parseInt(idd));
-                    //Log.d("Tag", "Error:" + cn);
-                    //db.addContact(new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome));
+                    Log.d("Tag", "Try: " + Integer.parseInt(idd));
+                    Integer status = mDb.verifyContactoExist(Integer.parseInt(idd));
+                    Log.d("Tag", "Status: " + status);
+                    if(status==0) {
+                        Log.d("Tag", "Insert: " + idd);
+                        mDb.addContact(new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome));
+                    }
+
                 }
 
             } catch (JSONException e) {

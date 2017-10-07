@@ -121,6 +121,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// return contact
 		return contact;
 	}
+
+	// Getting single contact
+	public int verifyContactoExist(int id) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String Query = "Select * from " + TABLE_CONTACTS + " where " + KEY_ID + " = " + id;
+		Cursor cursor = db.rawQuery(Query, null);
+		Integer status = 1;
+		if(cursor.getCount() <= 0){
+			status = 0;
+			return status;
+		}
+		return status;
+	}
 	
 	// Getting All Contacts
 	public List<Contact> getAllContacts() {
