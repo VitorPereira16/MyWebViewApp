@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT); // load online by default
 
         // Reading all contacts
-        Log.d("Reading: ", "Reading all contacts..");
+        //Log.d("Reading: ", "Reading all contacts..");
         //db.addContact(new Contact("Ravi", "9100000000","","","","","","",""));
         List<Contact> contacts = mDb.getAllContacts();
 
@@ -151,10 +151,12 @@ public class MainActivity extends AppCompatActivity {
             HttpConnectionService service = new HttpConnectionService();
             response = service.sendRequest(apiPath, postDataParams);
             JSONArray jsonArray = null;
+            JSONArray jsonArray1 = null;
 
             try {
-                jsonArray = new JSONArray(response);
-                Log.d("Tag", "Error:" + jsonArray);
+
+                JSONObject jsonResponse = new JSONObject(response);
+                jsonArray = jsonResponse.getJSONArray("users");
 
                 for(int i = 0; i < jsonArray.length(); i++){
                     String a = jsonArray.getString(i);
@@ -172,16 +174,36 @@ public class MainActivity extends AppCompatActivity {
                     String nome = (String) resultJsonObject.get("nome");
                     String ultimonome = (String) resultJsonObject.get("ultimonome");
 
-                    Log.d("Tag", "Try: " + Integer.parseInt(idd));
+                    //Log.d("Tag", "Try: " + Integer.parseInt(idd));
                     Integer status = mDb.verifyContactoExist(Integer.parseInt(idd));
-                    Log.d("Tag", "Status: " + status);
+                    //Log.d("Tag", "Status: " + status);
                     if(status==0) {
-                        Log.d("Tag", "Insert: " + idd);
+                        //Log.d("Tag", "Insert: " + idd);
                         mDb.addContact(new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome));
                     }
 
-                }
 
+
+                }
+                /*
+                JSONObject jsonResponse1 = new JSONObject(response);
+                jsonArray1 = jsonResponse.getJSONArray("contacts");
+                for(int i = 0; i < jsonArray1.length(); i++){
+                    String idd = (String) jsonResponse1.get("id");
+                    String type = (String) jsonResponse1.get("type");
+                    String type_name = (String) jsonResponse1.get("type_name");
+                    String contact_id = (String) jsonResponse1.get("contact_id");
+                    String contact_name = (String) jsonResponse1.get("contact_name");
+                    String contact_number = (String) jsonResponse1.get("contact_number");
+
+                    //Log.d("Tag", "Try: " + Integer.parseInt(idd));
+                    Integer status = mDb.verifyContactoExist(Integer.parseInt(idd));
+                    //Log.d("Tag", "Status: " + status);
+                    if(status==0) {
+                        //Log.d("Tag", "Insert: " + idd);
+                        mDb.addContactAdicionar(new ContactAdditional(Integer.parseInt(idd), type, type_name, contact_id, contact_name, contact_number));
+                    }
+                }*/
             } catch (JSONException e) {
                 e.printStackTrace();
             }

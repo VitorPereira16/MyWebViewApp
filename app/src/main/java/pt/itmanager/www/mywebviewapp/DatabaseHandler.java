@@ -22,6 +22,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Contacts table name
 	private static final String TABLE_CONTACTS = "contacts";
+	private static final String TABLE_CONTACTS_ADDI = "contacts";
 
 	// Contacts Table Columns names
 	private static final String KEY_ID = "id";
@@ -34,6 +35,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_MAIL = "mail";
 	private static final String KEY_NOME = "nome";
 	private static final String KEY_ULTIMO_NOME = "ultimonome";
+
+	// NOTE_TAGS Table - column names
+	private static final String KEY_CA_ID = "id";
+	private static final String KEY_CA_CONTACT_TYPE_ID = "contact_type_id";
+	private static final String KEY_CA_CONTACT_TYPE_NAME = "contact_type_name";
+	private static final String KEY_CA_CONTACT_ID = "contact_id";
+	private static final String KEY_CA_CONTACT_NAME = "contact_name";
+	private static final String KEY_CA_CONTACT_NUMBER = "contact_number";
 
 
 	public DatabaseHandler(Context context) {
@@ -53,7 +62,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_MAIL + " TEXT,"
 				+ KEY_NOME + " TEXT,"
 				+ KEY_ULTIMO_NOME + " TEXT" +")";
+		String CREATE_CONTACTS_ADDI_TABLE = "CREATE TABLE " + TABLE_CONTACTS_ADDI + "("
+				+ KEY_CA_ID + " INTEGER PRIMARY KEY," + KEY_CA_CONTACT_TYPE_ID + " TEXT,"
+				+ KEY_CA_CONTACT_TYPE_NAME + " TEXT,"
+				+ KEY_CA_CONTACT_ID + " TEXT,"
+				+ KEY_CA_CONTACT_NAME + " TEXT,"
+				+ KEY_CA_CONTACT_NUMBER + " TEXT" +")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
+		//db.execSQL(CREATE_CONTACTS_ADDI_TABLE);
 	}
 
 	// Upgrading database
@@ -61,10 +77,46 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// Drop older table if existed
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS);
+		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CONTACTS_ADDI);
 
 		// Create tables again
 		onCreate(db);
 	}
+
+
+	// Adding new contact
+	void addContactAdicionar(ContactAdditional contactAdditional) {
+		SQLiteDatabase db = this.getWritableDatabase();
+
+		ContentValues values = new ContentValues();
+		values.put(KEY_CA_CONTACT_TYPE_ID, contactAdditional.getContactoTypeId()); // Contact Name
+		values.put(KEY_CA_CONTACT_TYPE_NAME, contactAdditional.getContactTypeName()); // Contact Phone
+		values.put(KEY_CA_CONTACT_ID, contactAdditional.getContactId()); // Contact Phone
+		values.put(KEY_CA_CONTACT_NAME, contactAdditional.getContactName()); // Contact Phone
+		values.put(KEY_CA_CONTACT_NUMBER, contactAdditional.getContactNumber()); // Contact Phone
+
+		// Inserting Row
+		db.insert(TABLE_CONTACTS_ADDI, null, values);
+		db.close(); // Closing database connection
+	}
+
+	// Getting single contact
+	public int verifyContactAdditionalExist(int id) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String Query = "Select * from " + TABLE_CONTACTS_ADDI + " where " + KEY_CA_ID + " = " + id;
+		Cursor cursor = db.rawQuery(Query, null);
+		Integer status = 1;
+		if(cursor.getCount() <= 0){
+			status = 0;
+			return status;
+		}
+		return status;
+	}
+
+
+
+
 
 	/**
 	 * All CRUD(Create, Read, Update, Delete) Operations
@@ -122,6 +174,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return contact;
 	}
 
+	public int verifyContactoExistByNumber(String number) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String Query = "Select * from " + TABLE_CONTACTS + " where " + KEY_TELEMOVEL + " = " + number;
+		Cursor cursor = db.rawQuery(Query, null);
+		Integer status = 1;
+		if(cursor.getCount() <= 0){
+			status = 0;
+			return status;
+		}
+		return status;
+	}
+
 	// Getting single contact
 	public int verifyContactoExist(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -135,7 +200,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		}
 		return status;
 	}
-	
+
 	// Getting All Contacts
 	public List<Contact> getAllContacts() {
 		List<Contact> contactList = new ArrayList<Contact>();
@@ -144,7 +209,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		Cursor cursor = db.rawQuery(selectQuery, null);
-		Log.d("cor",  DatabaseUtils.dumpCursorToString(cursor));
+		//Log.d("cor",  DatabaseUtils.dumpCursorToString(cursor));
 		// looping through all rows and adding to list
 		if (cursor.moveToFirst()) {
 			do {
