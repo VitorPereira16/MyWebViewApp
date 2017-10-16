@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -29,9 +29,9 @@ public class PopUpInfo extends Activity {
 
         WindowManager.LayoutParams params = getWindow().getAttributes();
         params.x = 0;
-        params.height = (int)(height*.15);
+        params.height = (int)(height*.20);
         params.width = width;
-        params.y = (int)(height*.4);
+        params.y = (int)(height*.36);
 
         getWindow().setAttributes(params);
 
@@ -45,6 +45,13 @@ public class PopUpInfo extends Activity {
 
         TextView textnumero = (TextView) findViewById(R.id.textNumero);
         textnumero.setText(numero);
+
+        ImageView image = (ImageView) findViewById(R.id.imageView2);
+        image.setImageResource(R.mipmap.ic_launcher);
+
+        ImageView image1 = (ImageView) findViewById(R.id.imageView3);
+        image1.setImageResource(R.drawable.ic_phone_black_24dp);
+
 
     }
 }

@@ -1,15 +1,14 @@
 package pt.itmanager.www.mywebviewapp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -22,7 +21,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Contacts table name
 	private static final String TABLE_CONTACTS = "contacts";
-	private static final String TABLE_CONTACTS_ADDI = "contacts";
+	private static final String TABLE_CONTACTS_ADDI = "contacts_addi";
 
 	// Contacts Table Columns names
 	private static final String KEY_ID = "id";
@@ -69,7 +68,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				+ KEY_CA_CONTACT_NAME + " TEXT,"
 				+ KEY_CA_CONTACT_NUMBER + " TEXT" +")";
 		db.execSQL(CREATE_CONTACTS_TABLE);
-		//db.execSQL(CREATE_CONTACTS_ADDI_TABLE);
+		db.execSQL(CREATE_CONTACTS_ADDI_TABLE);
 	}
 
 	// Upgrading database
@@ -96,6 +95,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_CA_CONTACT_NUMBER, contactAdditional.getContactNumber()); // Contact Phone
 
 		// Inserting Row
+		Log.d("Name: ", values.toString());
 		db.insert(TABLE_CONTACTS_ADDI, null, values);
 		db.close(); // Closing database connection
 	}

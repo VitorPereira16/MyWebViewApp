@@ -4,42 +4,23 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
-import android.net.MailTo;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
 import android.view.WindowManager;
 import android.webkit.URLUtil;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
-import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
-import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,7 +28,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private WebView mWebView;
     private DatabaseHandler mDb;
-    //String weatherWebserviceURL = "http://api.openweathermap.org/data/2.5/weather?q=ariana,tn&appid=2156e2dd5b92590ab69c0ae1b2d24586&units=metric";
     String weatherWebserviceURL = "http://itmanager.pt/mobile_contacts/get_contacts.php";
 
     private String apiPath = "http://itmanager.pt/mobile_contacts/get_contacts.php";
@@ -185,16 +165,18 @@ public class MainActivity extends AppCompatActivity {
 
 
                 }
-                /*
-                JSONObject jsonResponse1 = new JSONObject(response);
+
                 jsonArray1 = jsonResponse.getJSONArray("contacts");
                 for(int i = 0; i < jsonArray1.length(); i++){
-                    String idd = (String) jsonResponse1.get("id");
-                    String type = (String) jsonResponse1.get("type");
-                    String type_name = (String) jsonResponse1.get("type_name");
-                    String contact_id = (String) jsonResponse1.get("contact_id");
-                    String contact_name = (String) jsonResponse1.get("contact_name");
-                    String contact_number = (String) jsonResponse1.get("contact_number");
+                    String a = jsonArray1.getString(i);
+                    JSONObject resultJsonObject = new JSONObject(a);
+
+                    String idd = (String) resultJsonObject.get("id");
+                    String type = (String) resultJsonObject.get("type");
+                    String type_name = (String) resultJsonObject.get("type_name");
+                    String contact_id = (String) resultJsonObject.get("contact_id");
+                    String contact_name = (String) resultJsonObject.get("contact_name");
+                    String contact_number = (String) resultJsonObject.get("contact_number");
 
                     //Log.d("Tag", "Try: " + Integer.parseInt(idd));
                     Integer status = mDb.verifyContactoExist(Integer.parseInt(idd));
@@ -203,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                         //Log.d("Tag", "Insert: " + idd);
                         mDb.addContactAdicionar(new ContactAdditional(Integer.parseInt(idd), type, type_name, contact_id, contact_name, contact_number));
                     }
-                }*/
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
