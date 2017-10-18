@@ -115,7 +115,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 
+	public int updateContactAdditional(ContactAdditional contactAdditional) {
+		SQLiteDatabase db = this.getWritableDatabase();
 
+		ContentValues values = new ContentValues();
+		values.put(KEY_CA_CONTACT_TYPE_ID, contactAdditional.getContactoTypeId()); // Contact Name
+		values.put(KEY_CA_CONTACT_TYPE_NAME, contactAdditional.getContactTypeName()); // Contact Phone
+		values.put(KEY_CA_CONTACT_ID, contactAdditional.getContactId()); // Contact Phone
+		values.put(KEY_CA_CONTACT_NAME, contactAdditional.getContactName()); // Contact Phone
+		values.put(KEY_CA_CONTACT_NUMBER, contactAdditional.getContactNumber()); // Contact Phone
+		// updating row
+		return db.update(TABLE_CONTACTS_ADDI, values, KEY_ID + " = ?",
+				new String[] { String.valueOf(contactAdditional.getID()) });
+	}
 
 
 	/**

@@ -160,6 +160,9 @@ public class MainActivity extends AppCompatActivity {
                     if(status==0) {
                         //Log.d("Tag", "Insert: " + idd);
                         mDb.addContact(new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome));
+                    }else{
+                        Contact c = new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome);
+                        mDb.updateContact(c);
                     }
 
 
@@ -184,6 +187,9 @@ public class MainActivity extends AppCompatActivity {
                     if(status==0) {
                         //Log.d("Tag", "Insert: " + idd);
                         mDb.addContactAdicionar(new ContactAdditional(Integer.parseInt(idd), type, type_name, contact_id, contact_name, contact_number));
+                    }else{
+                        ContactAdditional ca = new ContactAdditional(Integer.parseInt(idd), type, type_name, contact_id, contact_name, contact_number);
+                        mDb.updateContactAdditional(ca);
                     }
                 }
             } catch (JSONException e) {
