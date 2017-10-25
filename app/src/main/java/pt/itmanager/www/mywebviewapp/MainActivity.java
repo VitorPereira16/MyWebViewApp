@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         for (Contact cn : contacts) {
             String log = "Id: "+cn.getID()+" ,Name: " + cn.getNome() + " ,Phone: " + cn.getTelemovel();
             // Writing Contacts to log
-            Log.d("Name: ", log);
+            Log.d("2Name: ", log);
         }
         if (!isNetworkAvailable()) { // loading offline
             //mWebView.getSettings().setCacheMode( WebSettings.LOAD_CACHE_ELSE_NETWORK );

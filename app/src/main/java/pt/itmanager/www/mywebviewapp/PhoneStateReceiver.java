@@ -1,14 +1,10 @@
 package pt.itmanager.www.mywebviewapp;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.widget.Toast;
-
-import java.util.List;
 
 /**
  * Created by theappguruz on 07/05/16.
@@ -38,7 +34,22 @@ public class PhoneStateReceiver extends BroadcastReceiver {
                     context.startActivity(i);
 
                 }else{
-                    Toast.makeText(context,"Não encontrou o seguinte numero: "+incomingNumber, Toast.LENGTH_LONG).show();
+                    Integer status2 = db.verifyContactoAdditionalExistByNumber(incomingNumber);
+                    if(status2==1){
+                        ContactAdditional cn2 = db.getContactAdditionalByNumber(incomingNumber);
+                        Intent i = new Intent(context.getApplicationContext(), PopUpInfo.class);
+                        i.putExtra("nome", cn2.getContactName());
+                        i.putExtra("ultimonome", "");
+                        i.putExtra("telefone", incomingNumber);
+                        i.putExtras(intent);
+                        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        //Wait.oneSec();
+                        context.startActivity(i);
+                    }else{
+                        Toast.makeText(context,"Não encontrou o seguinte numero: "+incomingNumber, Toast.LENGTH_LONG).show();
+                    }
                 }
 
 

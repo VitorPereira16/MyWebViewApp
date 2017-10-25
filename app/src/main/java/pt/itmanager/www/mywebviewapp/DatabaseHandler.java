@@ -114,6 +114,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return status;
 	}
 
+	public int verifyContactoAdditionalExistByNumber(String number) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String Query = "Select * from " + TABLE_CONTACTS_ADDI + " where " + KEY_CA_CONTACT_NUMBER + " = " + number;
+		Cursor cursor = db.rawQuery(Query, null);
+		Integer status = 1;
+		if(cursor.getCount() <= 0){
+			status = 0;
+			return status;
+		}
+		return status;
+	}
+
+	// Getting single contact
+	ContactAdditional getContactAdditionalByNumber(String number) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+			Cursor cursor = db.query(TABLE_CONTACTS_ADDI, new String[] { KEY_CA_ID,
+						KEY_CA_CONTACT_TYPE_ID, KEY_CA_CONTACT_TYPE_NAME, KEY_CA_CONTACT_ID, KEY_CA_CONTACT_NAME, KEY_CA_CONTACT_NUMBER }, KEY_CA_CONTACT_NUMBER + "=?",
+				new String[] { String.valueOf(number) }, null, null, null, null);
+		if (cursor != null)
+			cursor.moveToFirst();
+
+		ContactAdditional contactA = new ContactAdditional(Integer.parseInt(cursor.getString(0)),
+				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
+		// return contact
+		return contactA;
+	}
 
 	public int updateContactAdditional(ContactAdditional contactAdditional) {
 		SQLiteDatabase db = this.getWritableDatabase();
