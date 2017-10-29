@@ -4,6 +4,7 @@ public class ContactAdditional {
 
 	//private variables
 	int _id;
+	String _id2;
 	String _contact_type_id;
 	String _contact_type_name;
 	String _contact_id;
@@ -11,8 +12,9 @@ public class ContactAdditional {
 	String _contact_number;
 
 	// constructor
-	public ContactAdditional(int id, String contact_type_id, String contact_type_name, String contact_id, String contact_name, String contact_number){
+	public ContactAdditional(int id, String id2, String contact_type_id, String contact_type_name, String contact_id, String contact_name, String contact_number){
 		this._id = id;
+		this._id2 = id2;
 		this._contact_type_id = contact_type_id;
 		this._contact_type_name = contact_type_name;
 		this._contact_id = contact_id;
@@ -21,7 +23,8 @@ public class ContactAdditional {
 	}
 
 	// constructor
-	public ContactAdditional(String contact_type_id, String contact_type_name, String contact_id, String contact_name, String contact_number){
+	public ContactAdditional(String id2, String contact_type_id, String contact_type_name, String contact_id, String contact_name, String contact_number){
+		this._id2 = id2;
 		this._contact_type_id = contact_type_id;
 		this._contact_type_name = contact_type_name;
 		this._contact_id = contact_id;
@@ -34,6 +37,14 @@ public class ContactAdditional {
 	// setting id
 	public void setID(int id){
 		this._id = id;
+	}
+
+	// getting ID2
+	public String getID2(){ return this._id2;}
+
+	// setting id2
+	public void setID2(String id2){
+		this._id2 = id2;
 	}
 
 	// getting name

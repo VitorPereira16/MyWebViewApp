@@ -43,7 +43,9 @@ public class MainActivity extends AppCompatActivity {
 
         mDb = new DatabaseHandler(this);
 
-        new ServiceStubAsyncTask(this, this, mDb).execute();
+        if (isNetworkAvailable()) {
+            new ServiceStubAsyncTask(this, this, mDb).execute();
+        }
 
         mWebView = (WebView) findViewById(R.id.activity_main_webview);
         WebSettings webSettings = mWebView.getSettings();
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         List<Contact> contacts = mDb.getAllContacts();
 
         for (Contact cn : contacts) {
-            String log = "Id: "+cn.getID()+" ,Name: " + cn.getNome() + " ,Phone: " + cn.getTelemovel();
+            String log = "Id: "+cn.getID2()+" ,Name: " + cn.getNome()+cn.getUltimoNome();
             // Writing Contacts to log
             Log.d("2Name: ", log);
         }
@@ -132,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
             response = service.sendRequest(apiPath, postDataParams);
             JSONArray jsonArray = null;
             JSONArray jsonArray1 = null;
-
             try {
 
                 JSONObject jsonResponse = new JSONObject(response);
@@ -144,24 +145,21 @@ public class MainActivity extends AppCompatActivity {
 
 
                     String idd = (String) resultJsonObject.get("id");
+                    String id2 = (String) resultJsonObject.get("id");
                     String numero_funcionario = (String) resultJsonObject.get("numero_funcionario");
                     String departamento = (String) resultJsonObject.get("departamento");
-                    String telemovel = (String) resultJsonObject.get("telemovel");
-                    String ext_telemovel = (String) resultJsonObject.get("ext_telemovel");
-                    String telefone = (String) resultJsonObject.get("telefone");
-                    String ext_telefone = (String) resultJsonObject.get("ext_telefone");
                     String mail = (String) resultJsonObject.get("mail");
                     String nome = (String) resultJsonObject.get("nome");
                     String ultimonome = (String) resultJsonObject.get("ultimonome");
 
                     //Log.d("Tag", "Try: " + Integer.parseInt(idd));
-                    Integer status = mDb.verifyContactoExist(Integer.parseInt(idd));
-                    //Log.d("Tag", "Status: " + status);
+                    Integer status = mDb.verifyContactoExist(idd);
+                    Log.d("Tag", "Status C: " + status);
                     if(status==0) {
                         //Log.d("Tag", "Insert: " + idd);
-                        mDb.addContact(new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome));
+                        mDb.addContact(new Contact(Integer.parseInt(idd), id2,numero_funcionario, departamento, mail, nome, ultimonome));
                     }else{
-                        Contact c = new Contact(Integer.parseInt(idd), numero_funcionario, departamento, telemovel, ext_telemovel, telefone, ext_telefone, mail, nome, ultimonome);
+                        Contact c = new Contact(Integer.parseInt(idd),id2, numero_funcionario, departamento, mail, nome, ultimonome);
                         mDb.updateContact(c);
                     }
 
@@ -174,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                     String a = jsonArray1.getString(i);
                     JSONObject resultJsonObject = new JSONObject(a);
 
+                    String id = (String) resultJsonObject.get("id");
                     String idd = (String) resultJsonObject.get("id");
                     String type = (String) resultJsonObject.get("type");
                     String type_name = (String) resultJsonObject.get("type_name");
@@ -182,13 +181,12 @@ public class MainActivity extends AppCompatActivity {
                     String contact_number = (String) resultJsonObject.get("contact_number");
 
                     //Log.d("Tag", "Try: " + Integer.parseInt(idd));
-                    Integer status = mDb.verifyContactoExist(Integer.parseInt(idd));
-                    //Log.d("Tag", "Status: " + status);
+                    Integer status = mDb.verifyContactoExistAd(idd, contact_id);
+                    Log.d("Tag", "Status insert: " + status +" " + idd +" " +contact_id);
                     if(status==0) {
-                        //Log.d("Tag", "Insert: " + idd);
-                        mDb.addContactAdicionar(new ContactAdditional(Integer.parseInt(idd), type, type_name, contact_id, contact_name, contact_number));
+                        mDb.addContactAdicionar(new ContactAdditional(Integer.parseInt(id),idd, type, type_name, contact_id, contact_name, contact_number));
                     }else{
-                        ContactAdditional ca = new ContactAdditional(Integer.parseInt(idd), type, type_name, contact_id, contact_name, contact_number);
+                        ContactAdditional ca = new ContactAdditional(Integer.parseInt(id), idd, type, type_name, contact_id, contact_name, contact_number);
                         mDb.updateContactAdditional(ca);
                     }
                 }

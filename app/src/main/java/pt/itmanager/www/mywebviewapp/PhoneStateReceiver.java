@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -15,47 +16,31 @@ public class PhoneStateReceiver extends BroadcastReceiver {
         DatabaseHandler db = new DatabaseHandler(context);
 
         try {
-            //System.out.println("Receiver start aaaaa");
             String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
             String incomingNumber = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
             if(state.equals(TelephonyManager.EXTRA_STATE_RINGING)){
-                Integer status = db.verifyContactoExistByNumber(incomingNumber);
-                if(status==1){
-                    Contact cn = db.getContactByNumber(incomingNumber);
+                Log.d("Numero: ", ""+incomingNumber);
+                Integer status2 = db.verifyContactoAdditionalExistByNumber(incomingNumber);
+                Log.d("Status: ", ""+status2);
+                if(status2==1){
+                    ContactAdditional cn2 = db.getContactAdditionalByNumber(incomingNumber);
+                    String idAd = cn2.getID2();
+                    Log.d("ID2: ", ""+idAd);
+
+                    Contact cn = db.getContact(idAd);
+
+
                     Intent i = new Intent(context.getApplicationContext(), PopUpInfo.class);
                     i.putExtra("nome", cn.getNome());
                     i.putExtra("ultimonome", cn.getUltimoNome());
                     i.putExtra("telefone", incomingNumber);
                     i.putExtras(intent);
-                    //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    //Wait.oneSec();
                     context.startActivity(i);
 
                 }else{
-                    Integer status2 = db.verifyContactoAdditionalExistByNumber(incomingNumber);
-                    if(status2==1){
-                        ContactAdditional cn2 = db.getContactAdditionalByNumber(incomingNumber);
-                        Intent i = new Intent(context.getApplicationContext(), PopUpInfo.class);
-                        i.putExtra("nome", cn2.getContactName());
-                        i.putExtra("ultimonome", "");
-                        i.putExtra("telefone", incomingNumber);
-                        i.putExtras(intent);
-                        //i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        //i.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        //Wait.oneSec();
-                        context.startActivity(i);
-                    }else{
-                        Toast.makeText(context,"Não encontrou o seguinte numero: "+incomingNumber, Toast.LENGTH_LONG).show();
-                    }
+                    Toast.makeText(context,"Não encontrou o seguinte numero: "+incomingNumber, Toast.LENGTH_LONG).show();
                 }
-
-
-                //startActivity
-                //cn.getID();
-                //Toast.makeText(context,"Ringing State Number is -"+cn.getID(), Toast.LENGTH_SHORT).show();
 
             }
             if ((state.equals(TelephonyManager.EXTRA_STATE_OFFHOOK))){

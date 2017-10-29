@@ -25,18 +25,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Contacts Table Columns names
 	private static final String KEY_ID = "id";
+	private static final String KEY_ID2 = "id2";
 	private static final String KEY_NR_FUNC = "numero_funcionario";
 	private static final String KEY_DEPARTAMENTO = "departamento";
 	private static final String KEY_TELEMOVEL = "telemovel";
-	private static final String KEY_EXT_TELEMOVEL = "ext_telemovel";
-	private static final String KEY_TELEFONE = "telefone";
-	private static final String KEY_EXT_TELEFONE = "ext_telefone";
+
 	private static final String KEY_MAIL = "mail";
 	private static final String KEY_NOME = "nome";
 	private static final String KEY_ULTIMO_NOME = "ultimonome";
 
 	// NOTE_TAGS Table - column names
 	private static final String KEY_CA_ID = "id";
+	private static final String KEY_CA_ID2 = "id2";
 	private static final String KEY_CA_CONTACT_TYPE_ID = "contact_type_id";
 	private static final String KEY_CA_CONTACT_TYPE_NAME = "contact_type_name";
 	private static final String KEY_CA_CONTACT_ID = "contact_id";
@@ -52,17 +52,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_CONTACTS + "("
-				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_NR_FUNC + " TEXT,"
+				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_ID2 + " TEXT," + KEY_NR_FUNC + " TEXT,"
 				+ KEY_DEPARTAMENTO + " TEXT,"
-				+ KEY_TELEMOVEL + " TEXT,"
-				+ KEY_EXT_TELEMOVEL + " TEXT,"
-				+ KEY_TELEFONE + " TEXT,"
-				+ KEY_EXT_TELEFONE + " TEXT,"
 				+ KEY_MAIL + " TEXT,"
 				+ KEY_NOME + " TEXT,"
 				+ KEY_ULTIMO_NOME + " TEXT" +")";
 		String CREATE_CONTACTS_ADDI_TABLE = "CREATE TABLE " + TABLE_CONTACTS_ADDI + "("
-				+ KEY_CA_ID + " INTEGER PRIMARY KEY," + KEY_CA_CONTACT_TYPE_ID + " TEXT,"
+				+ KEY_CA_ID + " INTEGER PRIMARY KEY," + KEY_CA_ID2 + " TEXT," + KEY_CA_CONTACT_TYPE_ID + " TEXT,"
 				+ KEY_CA_CONTACT_TYPE_NAME + " TEXT,"
 				+ KEY_CA_CONTACT_ID + " TEXT,"
 				+ KEY_CA_CONTACT_NAME + " TEXT,"
@@ -88,6 +84,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
+		values.put(KEY_CA_ID2, contactAdditional.getID2()); // Contact Name
 		values.put(KEY_CA_CONTACT_TYPE_ID, contactAdditional.getContactoTypeId()); // Contact Name
 		values.put(KEY_CA_CONTACT_TYPE_NAME, contactAdditional.getContactTypeName()); // Contact Phone
 		values.put(KEY_CA_CONTACT_ID, contactAdditional.getContactId()); // Contact Phone
@@ -118,6 +115,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getReadableDatabase();
 
 		String Query = "Select * from " + TABLE_CONTACTS_ADDI + " where " + KEY_CA_CONTACT_NUMBER + " = " + number;
+		Log.d("QUERY: ", Query);
 		Cursor cursor = db.rawQuery(Query, null);
 		Integer status = 1;
 		if(cursor.getCount() <= 0){
@@ -131,14 +129,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	ContactAdditional getContactAdditionalByNumber(String number) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-			Cursor cursor = db.query(TABLE_CONTACTS_ADDI, new String[] { KEY_CA_ID,
+			Cursor cursor = db.query(TABLE_CONTACTS_ADDI, new String[] { KEY_CA_ID, KEY_CA_ID2,
 						KEY_CA_CONTACT_TYPE_ID, KEY_CA_CONTACT_TYPE_NAME, KEY_CA_CONTACT_ID, KEY_CA_CONTACT_NAME, KEY_CA_CONTACT_NUMBER }, KEY_CA_CONTACT_NUMBER + "=?",
 				new String[] { String.valueOf(number) }, null, null, null, null);
 		if (cursor != null)
 			cursor.moveToFirst();
 
 		ContactAdditional contactA = new ContactAdditional(Integer.parseInt(cursor.getString(0)),
-				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5));
+				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
 		// return contact
 		return contactA;
 	}
@@ -147,14 +145,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
+		//values.put(KEY_CA_ID2, contactAdditional.getID2()); // Contact Name
 		values.put(KEY_CA_CONTACT_TYPE_ID, contactAdditional.getContactoTypeId()); // Contact Name
 		values.put(KEY_CA_CONTACT_TYPE_NAME, contactAdditional.getContactTypeName()); // Contact Phone
 		values.put(KEY_CA_CONTACT_ID, contactAdditional.getContactId()); // Contact Phone
 		values.put(KEY_CA_CONTACT_NAME, contactAdditional.getContactName()); // Contact Phone
 		values.put(KEY_CA_CONTACT_NUMBER, contactAdditional.getContactNumber()); // Contact Phone
+		Log.d("Cont: ", values.toString());
 		// updating row
-		return db.update(TABLE_CONTACTS_ADDI, values, KEY_ID + " = ?",
-				new String[] { String.valueOf(contactAdditional.getID()) });
+		return db.update(TABLE_CONTACTS_ADDI, values, KEY_CA_ID2 + " = ?",
+				new String[] { String.valueOf(contactAdditional.getID2()) });
+	}
+
+	// Getting single contactAd
+	public int verifyContactoExistAd(String id, String contact_id) {
+		SQLiteDatabase db = this.getReadableDatabase();
+
+		String Query = "Select * from " + TABLE_CONTACTS_ADDI + " where " + KEY_CA_ID2 + " = " + id +" AND "+ KEY_CA_CONTACT_ID + " = " + contact_id;
+		Log.d("Query: ", Query);
+		Cursor cursor = db.rawQuery(Query, null);
+		Integer status = 1;
+		if(cursor.getCount() <= 0){
+			status = 0;
+			return status;
+		}
+		return status;
 	}
 
 
@@ -167,33 +182,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
+		values.put(KEY_ID2, contact.getID2()); // Contact Name
 		values.put(KEY_NR_FUNC, contact.getNumeroFuncionario()); // Contact Name
 		values.put(KEY_DEPARTAMENTO, contact.getDepartamento()); // Contact Phone
-		values.put(KEY_TELEMOVEL, contact.getTelemovel()); // Contact Phone
-		values.put(KEY_EXT_TELEMOVEL, contact.getExtTelemovel()); // Contact Phone
-		values.put(KEY_TELEFONE, contact.getTelefone()); // Contact Phone
-		values.put(KEY_EXT_TELEFONE, contact.getExtTelefone()); // Contact Phone
 		values.put(KEY_MAIL, contact.getMail()); // Contact Phone
 		values.put(KEY_NOME, contact.getNome()); // Contact Phone
 		values.put(KEY_ULTIMO_NOME, contact.getUltimoNome()); // Contact Phone
 
 		// Inserting Row
+		Log.d("Cont: ", values.toString());
 		db.insert(TABLE_CONTACTS, null, values);
 		db.close(); // Closing database connection
 	}
 
 	// Getting single contact
-	Contact getContact(int id) {
+	Contact getContact(String id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID,
-						KEY_NR_FUNC, KEY_DEPARTAMENTO, KEY_TELEMOVEL, KEY_EXT_TELEMOVEL, KEY_TELEFONE, KEY_EXT_TELEFONE, KEY_MAIL, KEY_NOME, KEY_ULTIMO_NOME }, KEY_ID + "=?",
+		Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID, KEY_ID2,
+						KEY_NR_FUNC, KEY_DEPARTAMENTO, KEY_MAIL, KEY_NOME, KEY_ULTIMO_NOME }, KEY_ID2 + "=?",
 				new String[] { String.valueOf(id) }, null, null, null, null);
 		if (cursor != null)
 			cursor.moveToFirst();
 
 		Contact contact = new Contact(Integer.parseInt(cursor.getString(0)),
-				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9));
+				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
 		// return contact
 		return contact;
 	}
@@ -202,36 +215,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	Contact getContactByNumber(String number) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID,
-				KEY_NR_FUNC, KEY_DEPARTAMENTO, KEY_TELEMOVEL, KEY_EXT_TELEMOVEL, KEY_TELEFONE, KEY_EXT_TELEFONE, KEY_MAIL, KEY_NOME, KEY_ULTIMO_NOME }, KEY_TELEMOVEL + "=?",
+		Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID, KEY_ID2,
+				KEY_NR_FUNC, KEY_DEPARTAMENTO, KEY_MAIL, KEY_NOME, KEY_ULTIMO_NOME }, KEY_TELEMOVEL + "=?",
 				new String[] { String.valueOf(number) }, null, null, null, null);
 		if (cursor != null)
 			cursor.moveToFirst();
 
 		Contact contact = new Contact(Integer.parseInt(cursor.getString(0)),
-				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6), cursor.getString(7), cursor.getString(8), cursor.getString(9));
+				cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getString(6));
 		// return contact
 		return contact;
 	}
 
-	public int verifyContactoExistByNumber(String number) {
-		SQLiteDatabase db = this.getReadableDatabase();
-
-		String Query = "Select * from " + TABLE_CONTACTS + " where " + KEY_TELEMOVEL + " = " + number;
-		Cursor cursor = db.rawQuery(Query, null);
-		Integer status = 1;
-		if(cursor.getCount() <= 0){
-			status = 0;
-			return status;
-		}
-		return status;
-	}
 
 	// Getting single contact
-	public int verifyContactoExist(int id) {
+	public int verifyContactoExist(String id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		String Query = "Select * from " + TABLE_CONTACTS + " where " + KEY_ID + " = " + id;
+		String Query = "Select * from " + TABLE_CONTACTS + " where " + KEY_ID2 + " = " + id;
 		Cursor cursor = db.rawQuery(Query, null);
 		Integer status = 1;
 		if(cursor.getCount() <= 0){
@@ -255,15 +256,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			do {
 				Contact contact = new Contact();
 				contact.setID(Integer.parseInt(cursor.getString(0)));
-				contact.setNumeroFuncionario(cursor.getString(1)); // Contact Name
-				contact.setDepartamento(cursor.getString(2)); // Contact Phone
-				contact.setTelemovel(cursor.getString(3)); // Contact Phone
-				contact.setExtTelemovel(cursor.getString(4)); // Contact Phone
-				contact.setTelefone(cursor.getString(5)); // Contact Phone
-				contact.setExtTelefone(cursor.getString(6)); // Contact Phone
-				contact.setMail(cursor.getString(7)); // Contact Phone
-				contact.setNome(cursor.getString(8)); // Contact Phone
-				contact.setUltimoNome(cursor.getString(9)); // Contact Phone
+				contact.setID2(cursor.getString(1));
+				contact.setNumeroFuncionario(cursor.getString(2)); // Contact Name
+				contact.setDepartamento(cursor.getString(3)); // Contact Phone
+				contact.setMail(cursor.getString(4)); // Contact Phone
+				contact.setNome(cursor.getString(5)); // Contact Phone
+				contact.setUltimoNome(cursor.getString(6)); // Contact Phone
 				// Adding contact to list
 				contactList.add(contact);
 			} while (cursor.moveToNext());
@@ -278,12 +276,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
+		values.put(KEY_ID2, contact.getNumeroFuncionario()); // Contact Name
 		values.put(KEY_NR_FUNC, contact.getNumeroFuncionario()); // Contact Name
 		values.put(KEY_DEPARTAMENTO, contact.getDepartamento()); // Contact Phone
-		values.put(KEY_TELEMOVEL, contact.getTelemovel()); // Contact Phone
-		values.put(KEY_EXT_TELEMOVEL, contact.getExtTelemovel()); // Contact Phone
-		values.put(KEY_TELEFONE, contact.getTelefone()); // Contact Phone
-		values.put(KEY_EXT_TELEFONE, contact.getExtTelefone()); // Contact Phone
 		values.put(KEY_MAIL, contact.getMail()); // Contact Phone
 		values.put(KEY_NOME, contact.getNome()); // Contact Phone
 		values.put(KEY_ULTIMO_NOME, contact.getUltimoNome()); // Contact Phone
